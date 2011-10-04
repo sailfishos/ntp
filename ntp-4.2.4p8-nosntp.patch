@@ -1,0 +1,42 @@
+diff -uNpr ntp-4.2.4p8/configure ntp-4.2.4p8-fixed/configure
+--- ntp-4.2.4p8/configure	2009-12-08 21:07:43.000000000 +0800
++++ ntp-4.2.4p8-fixed/configure	2009-12-14 18:13:22.000000000 +0800
+@@ -988,8 +988,7 @@ LDFLAGS
+ LIBS
+ CPPFLAGS
+ CPP'
+-ac_subdirs_all='arlib
+-sntp'
++ac_subdirs_all='arlib'
+ 
+ # Initialize some variables set by options.
+ ac_init_help=
+@@ -25764,7 +25763,7 @@ ac_config_files="$ac_config_files script
+ ac_config_files="$ac_config_files util/Makefile"
+ 
+ 
+-subdirs="$subdirs sntp"
++subdirs="$subdirs"
+ 
+ 
+ cat >confcache <<\_ACEOF
+diff -uNpr ntp-4.2.4p8/Makefile.in ntp-4.2.4p8-fixed/Makefile.in
+--- ntp-4.2.4p8/Makefile.in	2009-12-08 21:07:31.000000000 +0800
++++ ntp-4.2.4p8-fixed/Makefile.in	2009-12-14 18:10:02.000000000 +0800
+@@ -246,7 +246,7 @@ ACLOCAL_AMFLAGS = -I m4 -I libopts/m4
+ NULL = 
+ SUBDIRS = $(am__append_1) scripts include ElectricFence @ARLIB_DIR@ \
+ 	libntp libparse ntpd ntpdate ntpdc ntpq parseutil adjtimed \
+-	clockstuff kernel sntp util $(NULL)
++	clockstuff kernel util $(NULL)
+ DIST_SUBDIRS = \
+ 	scripts		\
+ 	include		\
+@@ -263,7 +263,6 @@ DIST_SUBDIRS = \
+ 	adjtimed	\
+ 	clockstuff	\
+ 	kernel		\
+-	sntp		\
+ 	util		\
+ 	$(NULL)
+ 

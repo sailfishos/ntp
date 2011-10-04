@@ -1,0 +1,137 @@
+diff -uNpr ntp-4.2.4p8/html/ntpd.html ntp-4.2.4p8-fixed/html/ntpd.html
+--- ntp-4.2.4p8/html/ntpd.html	2006-12-28 20:02:57.000000000 +0800
++++ ntp-4.2.4p8-fixed/html/ntpd.html	2009-12-14 18:02:33.000000000 +0800
+@@ -89,6 +89,8 @@
+ 			<dd>Specify the name and path of the log file. The default is the system log file. This is the same operation as the <tt>logfile <i>logfile</i></tt> configuration command.
+ 			<dt><tt>-L</tt>
+ 			<dd>Do not listen to virtual IPs. The default is to listen.
++			<dt><tt>-m</tt>
++			<dd>Lock memory.
+ 			<dt><tt>-n</tt>
+ 			<dd>Don't fork.
+ 			<dt><tt>-N</tt>
+diff -uNpr ntp-4.2.4p8/ntpd/ntpd.c ntp-4.2.4p8-fixed/ntpd/ntpd.c
+--- ntp-4.2.4p8/ntpd/ntpd.c	2009-12-08 19:55:58.000000000 +0800
++++ ntp-4.2.4p8-fixed/ntpd/ntpd.c	2009-12-14 18:02:33.000000000 +0800
+@@ -696,7 +696,8 @@ ntpdmain(
+ 	}
+ #endif
+ 
+-#if defined(HAVE_MLOCKALL) && defined(MCL_CURRENT) && defined(MCL_FUTURE)
++#if defined(MCL_CURRENT) && defined(MCL_FUTURE)
++    if (HAVE_OPT( MLOCK )) {
+ # ifdef HAVE_SETRLIMIT
+ 	/*
+ 	 * Set the stack limit to something smaller, so that we don't lock a lot
+@@ -722,7 +723,7 @@ ntpdmain(
+ 	     * fail if we drop root privlege.  To be useful the value
+ 	     * has to be larger than the largest ntpd resident set size.
+ 	     */
+-	    rl.rlim_cur = rl.rlim_max = 32*1024*1024;
++	    rl.rlim_cur = rl.rlim_max = 64*1024*1024;
+ 	    if (setrlimit(RLIMIT_MEMLOCK, &rl) == -1) {
+ 	    	msyslog(LOG_ERR, "Cannot set RLIMIT_MEMLOCK: %m");
+ 	    }
+@@ -734,6 +735,7 @@ ntpdmain(
+ 	 */
+ 	if (mlockall(MCL_CURRENT|MCL_FUTURE) < 0)
+ 		msyslog(LOG_ERR, "mlockall(): %m");
++    }
+ #else /* not (HAVE_MLOCKALL && MCL_CURRENT && MCL_FUTURE) */
+ # ifdef HAVE_PLOCK
+ #  ifdef PROCLOCK
+diff -uNpr ntp-4.2.4p8/ntpd/ntpd-opts.c ntp-4.2.4p8-fixed/ntpd/ntpd-opts.c
+--- ntp-4.2.4p8/ntpd/ntpd-opts.c	2009-12-08 21:13:09.000000000 +0800
++++ ntp-4.2.4p8-fixed/ntpd/ntpd-opts.c	2009-12-14 18:02:33.000000000 +0800
+@@ -264,6 +264,15 @@ tSCC    zNice_Name[]               = "ni
+ #define NICE_FLAGS       (OPTST_DISABLED)
+ 
+ /*
++ *  Mlock option description:
++ */
++tSCC    zMlockText[] =
++        "Lock memory";
++tSCC    zMlock_NAME[]               = "MLOCK";
++tSCC    zMlock_Name[]               = "mlock";
++#define MLOCK_FLAGS       (OPTST_DISABLED)
++
++/*
+  *  Pidfile option description:
+  */
+ tSCC    zPidfileText[] =
+@@ -789,6 +798,18 @@ static tOptDesc optDesc[ OPTION_CT ] = {
+                                 OPTST_ARG_OPTIONAL | OPTST_IMM | OPTST_NO_INIT
+ #endif
+ 
++  {  /* entry idx, value */ 29, VALUE_OPT_MLOCK,
++     /* equiv idx, value */ 29, VALUE_OPT_MLOCK,
++     /* equivalenced to  */ NO_EQUIVALENT,
++     /* min, max, act ct */ 0, 1, 0,
++     /* opt state flags  */ MLOCK_FLAGS, 0,
++     /* last opt argumnt */ { NULL },
++     /* arg list/cookie  */ NULL,
++     /* must/cannot opts */ NULL, NULL,
++     /* option proc      */ NULL,
++     /* desc, NAME, name */ zMlockText, zMlock_NAME, zMlock_Name,
++     /* disablement strs */ NULL, NULL },
++
+   {  /* entry idx, value */ INDEX_OPT_VERSION, VALUE_OPT_VERSION,
+      /* equiv idx value  */ NO_EQUIVALENT, 0,
+      /* equivalenced to  */ NO_EQUIVALENT,
+@@ -881,7 +902,7 @@ tOptions ntpdOptions = {
+       NO_EQUIVALENT /* index of '-#' option */,
+       NO_EQUIVALENT /* index of default opt */
+     },
+-    32 /* full option count */, 29 /* user option count */
++    33 /* full option count */, 30 /* user option count */
+ };
+ 
+ /*
+diff -uNpr ntp-4.2.4p8/ntpd/ntpd-opts.h ntp-4.2.4p8-fixed/ntpd/ntpd-opts.h
+--- ntp-4.2.4p8/ntpd/ntpd-opts.h	2009-12-08 21:13:09.000000000 +0800
++++ ntp-4.2.4p8-fixed/ntpd/ntpd-opts.h	2009-12-14 18:04:13.000000000 +0800
+@@ -81,12 +81,13 @@ typedef enum {
+         INDEX_OPT_VAR              = 26,
+         INDEX_OPT_DVAR             = 27,
+         INDEX_OPT_SLEW             = 28,
+-        INDEX_OPT_VERSION          = 29,
+-        INDEX_OPT_HELP             = 30,
+-        INDEX_OPT_MORE_HELP        = 31
++        INDEX_OPT_MLOCK            = 29,
++        INDEX_OPT_VERSION          = 30,
++        INDEX_OPT_HELP             = 31,
++        INDEX_OPT_MORE_HELP        = 32
+ } teOptIndex;
+ 
+-#define OPTION_CT    32
++#define OPTION_CT    33
+ #define NTPD_VERSION       "4.2.4p8"
+ #define NTPD_FULL_VERSION  "ntpd - NTP daemon program - Ver. 4.2.4p8"
+ 
+@@ -179,6 +180,10 @@ typedef enum {
+ #  warning undefining MODIFYMMTIMER due to option name conflict
+ #  undef   MODIFYMMTIMER
+ # endif
++# ifdef    MLOCK
++#  warning undefining MLOCK due to option name conflict
++#  undef   MLOCK
++# endif
+ # ifdef    NOFORK
+ #  warning undefining NOFORK due to option name conflict
+ #  undef   NOFORK
+@@ -248,6 +253,7 @@ typedef enum {
+ # undef LOGFILE
+ # undef NOVIRTUALIPS
+ # undef MODIFYMMTIMER
++# undef MLOCK
+ # undef NOFORK
+ # undef NICE
+ # undef PIDFILE
+@@ -290,6 +296,7 @@ typedef enum {
+ #ifdef SYS_WINNT
+ #define VALUE_OPT_MODIFYMMTIMER  'M'
+ #endif /* SYS_WINNT */
++#define VALUE_OPT_MLOCK          'm'
+ #define VALUE_OPT_NOFORK         'n'
+ #define VALUE_OPT_NICE           'N'
+ #define VALUE_OPT_PIDFILE        'p'

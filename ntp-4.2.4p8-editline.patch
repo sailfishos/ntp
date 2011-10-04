@@ -1,0 +1,57 @@
+diff -uNpr ntp-4.2.4p8/configure ntp-4.2.4p8-fixed/configure
+--- ntp-4.2.4p8/configure	2009-12-08 21:07:43.000000000 +0800
++++ ntp-4.2.4p8-fixed/configure	2009-12-14 18:01:05.000000000 +0800
+@@ -17217,8 +17217,14 @@ done
+ 
+ 
+ # following block becomes on 4.2.5: NTP_LINEEDITLIBS
++READLINE_LIBS="-ledit"
++cat >>confdefs.h <<\_ACEOF
++#define HAVE_LIBEDIT
++_ACEOF
++
+ for ac_header in readline/history.h readline/readline.h
+ do :
++break
+   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+ eval as_val=\$$as_ac_Header
+@@ -17232,7 +17238,7 @@ fi
+ done
+ 
+ case "$ac_cv_header_readline_history_h$ac_cv_header_readline_readline_h" in
+- *no*) ;;
++ *) ;;
+  *) save_LIBS=$LIBS
+     LIBS=
+     # Ralf Wildenhues: either unset ... or cache READLINE_LIBS
+diff -uNpr ntp-4.2.4p8/ntpdc/ntpdc.c ntp-4.2.4p8-fixed/ntpdc/ntpdc.c
+--- ntp-4.2.4p8/ntpdc/ntpdc.c	2009-12-08 19:55:59.000000000 +0800
++++ ntp-4.2.4p8-fixed/ntpdc/ntpdc.c	2009-12-14 17:59:07.000000000 +0800
+@@ -26,9 +26,8 @@
+ # define closesocket close
+ #endif /* SYS_WINNT */
+ 
+-#if defined(HAVE_LIBREADLINE) || defined (HAVE_LIBEDIT)
+-# include <readline/readline.h>
+-# include <readline/history.h>
++#if defined (HAVE_LIBEDIT)
++# include <editline/readline.h>
+ #endif /* HAVE_LIBREADLINE || HAVE_LIBEDIT */
+ 
+ #ifdef SYS_VXWORKS
+diff -uNpr ntp-4.2.4p8/ntpq/ntpq.c ntp-4.2.4p8-fixed/ntpq/ntpq.c
+--- ntp-4.2.4p8/ntpq/ntpq.c	2009-12-08 19:55:59.000000000 +0800
++++ ntp-4.2.4p8-fixed/ntpq/ntpq.c	2009-12-14 17:59:07.000000000 +0800
+@@ -30,9 +30,8 @@
+ # define closesocket close
+ #endif /* SYS_WINNT */
+ 
+-#if defined(HAVE_LIBREADLINE) || defined(HAVE_LIBEDIT)
+-# include <readline/readline.h>
+-# include <readline/history.h>
++#if defined(HAVE_LIBEDIT)
++# include <editline/readline.h>
+ #endif /* HAVE_LIBREADLINE || HAVE_LIBEDIT */
+ 
+ #ifdef SYS_VXWORKS
