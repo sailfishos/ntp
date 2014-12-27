@@ -102,6 +102,14 @@ Patch30: ntp-4.2.4p7-freqmode.patch
 Patch31: ntpstat-0.2-clksrc.patch
 # process first packet in multipacket response
 Patch32: ntpstat-0.2-multipacket.patch
+#CVE-2014-9293
+Patch33: CVE-2014-9293.patch
+#CVE-2014-9294
+Patch34: CVE-2014-9294.patch
+#CVE-2014-9295
+Patch35: CVE-2014-9295.patch
+#ntp-4.2.4p8-lcrypto.patch
+Patch36: ntp-4.2.4p8-lcrypto.patch
 
 URL: http://www.ntp.org
 Requires: ntpdate = %{version}-%{release}
@@ -183,6 +191,10 @@ This package contains NTP documentation in HTML format.
 %patch30 -p1 -b .freqmode
 %patch31 -p1 -b .clksrc
 %patch32 -p1 -b .multipacket
+%patch33 -p1 -b .CVE-2014-9293
+%patch34 -p1 -b .CVE-2014-9294
+%patch35 -p1 -b .CVE-2014-9295
+%patch36 -p1 -b .lcrypto
 
 # clock_gettime needs -lrt
 sed -i.gettime 's|^LIBS = @LIBS@|& -lrt|' ntp{d,q,dc,date}/Makefile.in
