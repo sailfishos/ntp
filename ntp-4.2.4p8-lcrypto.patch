@@ -1,0 +1,39 @@
+Index: ntp-4.2.4p8/ntpdate/Makefile.in
+===================================================================
+--- ntp-4.2.4p8.orig/ntpdate/Makefile.in
++++ ntp-4.2.4p8/ntpdate/Makefile.in
+@@ -224,7 +224,7 @@ top_srcdir = @top_srcdir@
+ ntptimeset_SOURCES = ntptimeset.c ntptime_config.c
+ AM_CPPFLAGS = -I$(top_srcdir)/include
+ # LDADD might need RESLIB and ADJLIB
+-LDADD = version.o ../libntp/libntp.a
++LDADD = version.o ../libntp/libntp.a @LCRYPTO@
+ DISTCLEANFILES = .version version.c stamp-v
+ noinst_HEADERS = ntpdate.h
+ ETAGS_ARGS = Makefile.am
+Index: ntp-4.2.4p8/ntpdc/Makefile.in
+===================================================================
+--- ntp-4.2.4p8.orig/ntpdc/Makefile.in
++++ ntp-4.2.4p8/ntpdc/Makefile.in
+@@ -251,7 +251,7 @@ BUILT_SOURCES = @MAKE_CHECK_LAYOUT@ ntpd
+ 	ntpdc-opts.texi ntpdc-opts.menu
+ AM_CPPFLAGS = -I$(top_srcdir)/include $(LIBOPTS_CFLAGS)
+ # LDADD might need RESLIB and ADJLIB
+-ntpdc_LDADD = version.o @READLINE_LIBS@ $(LIBOPTS_LDADD) ../libntp/libntp.a
++ntpdc_LDADD = version.o @READLINE_LIBS@ @LCRYPTO@ $(LIBOPTS_LDADD) ../libntp/libntp.a
+ # ntpdc-layout doesn't need any additional libraries at all
+ ntpdc_layout_LDADD = 
+ DISTCLEANFILES = .version version.c
+Index: ntp-4.2.4p8/ntpq/Makefile.in
+===================================================================
+--- ntp-4.2.4p8.orig/ntpq/Makefile.in
++++ ntp-4.2.4p8/ntpq/Makefile.in
+@@ -240,7 +240,7 @@ AUTOMAKE_OPTIONS = ../util/ansi2knr
+ AM_CPPFLAGS = -I$(top_srcdir)/include $(LIBOPTS_CFLAGS)
+ 
+ # LDADD might need RESLIB and ADJLIB
+-ntpq_LDADD = version.o @READLINE_LIBS@ $(LIBOPTS_LDADD) ../libntp/libntp.a
++ntpq_LDADD = version.o @READLINE_LIBS@ @LCRYPTO@ $(LIBOPTS_LDADD) ../libntp/libntp.a
+ DISTCLEANFILES = .version version.c
+ noinst_HEADERS = ntpq.h
+ ETAGS_ARGS = Makefile.am
