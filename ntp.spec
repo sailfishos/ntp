@@ -110,6 +110,10 @@ Patch34: CVE-2014-9294.patch
 Patch35: CVE-2014-9295.patch
 #ntp-4.2.4p8-lcrypto.patch
 Patch36: ntp-4.2.4p8-lcrypto.patch
+#CVE-2014-9297
+Patch37: CVE-2014-9297.patch
+#CVE-2014-9298
+Patch38: CVE-2014-9298.patch
 
 URL: http://www.ntp.org
 Requires: ntpdate = %{version}-%{release}
@@ -195,6 +199,8 @@ This package contains NTP documentation in HTML format.
 %patch34 -p1 -b .CVE-2014-9294
 %patch35 -p1 -b .CVE-2014-9295
 %patch36 -p1 -b .lcrypto
+%patch37 -p1 -b .CVE-2014-9297
+%patch38 -p1 -b .CVE-2014-9298
 
 # clock_gettime needs -lrt
 sed -i.gettime 's|^LIBS = @LIBS@|& -lrt|' ntp{d,q,dc,date}/Makefile.in

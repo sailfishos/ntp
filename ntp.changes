@@ -1,3 +1,6 @@
+* Wed Feb 18 2015 Pasi Sjöholm <pasi.sjoholm@jollamobile.com> - 4.2.4p8
+- Fix CVE-2014-9297, CVE-2014-9298
+
 * Sat Dec 27 2014 Pasi Sjöholm <pasi.sjoholm@jollamobile.com> - 4.2.4p8
 - Fix CVE-2014-9295, CVE-2014-9294, CVE-2014-9293
 
